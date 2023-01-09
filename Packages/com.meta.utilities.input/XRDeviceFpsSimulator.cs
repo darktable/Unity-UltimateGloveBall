@@ -12,6 +12,8 @@ using CommonUsages = UnityEngine.InputSystem.CommonUsages;
 
 public class XRDeviceFpsSimulator : MonoBehaviour
 {
+    public static XRDeviceFpsSimulator Instance { get; private set; }
+    
     private XRSimulatedHMDState m_hmdState;
     private XRSimulatedControllerState m_leftControllerState;
     private XRSimulatedControllerState m_rightControllerState;
@@ -61,6 +63,29 @@ public class XRDeviceFpsSimulator : MonoBehaviour
 
     private Vector2 m_headRotator = Vector2.zero;
 
+    public bool IsActive { get; private set; } = false;
+
+    public bool LeftTriggerDown => m_leftControllerState.trigger > 0.5f;
+    public bool RightTriggerDown => m_rightControllerState.trigger > 0.5f;
+    public bool LeftGripDown => m_leftControllerState.grip > 0.5f;
+    public bool RightGripDown => m_rightControllerState.grip > 0.5f;
+
+    public Action DevicesUpdated;
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else if (Instance != this)
+        {
+            Debug.LogError($"Two {nameof(XRDeviceFpsSimulator)} singletons!", gameObject);
+            DestroyImmediate(this);
+            return;
+        }
+    }
+
     private void OnEnable()
     {
         if (m_disableIfRealHmdConnected && XRSettings.loadedDeviceName?.Trim() is not ("MockHMD Display" or "" or null))
@@ -77,12 +102,14 @@ public class XRDeviceFpsSimulator : MonoBehaviour
 
         AddDevices();
         EnableActions();
+        IsActive = true;
     }
 
     private void OnDisable()
     {
         DisableActions();
         RemoveDevices();
+        IsActive = false;
     }
 
     private void EnableActions()
@@ -259,5 +286,7 @@ public class XRDeviceFpsSimulator : MonoBehaviour
         {
             InputState.Change(m_rightControllerDevice, m_rightControllerState);
         }
+
+        DevicesUpdated?.Invoke();
     }
 }

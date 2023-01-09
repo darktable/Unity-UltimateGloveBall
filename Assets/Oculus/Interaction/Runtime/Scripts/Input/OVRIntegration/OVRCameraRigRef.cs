@@ -21,6 +21,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.Assertions;
+using System.Runtime.CompilerServices;
 
 namespace Oculus.Interaction.Input
 {
@@ -41,6 +42,9 @@ namespace Oculus.Interaction.Input
         Transform RightController { get; }
 
         event Action<bool> WhenInputDataDirtied;
+        OVRInput.Controller GetConnectedControllers();
+        bool GetTouch(OVRInput.Touch mappingTouch, OVRInput.Controller controllerMask);
+        bool GetButton(OVRInput.Button mappingButton, OVRInput.Controller controllerMask);
     }
 
     /// <summary>
@@ -54,7 +58,7 @@ namespace Oculus.Interaction.Input
     {
         [Header("Configuration")]
         [SerializeField]
-        private OVRCameraRig _ovrCameraRig;
+        protected OVRCameraRig _ovrCameraRig;
 
         [SerializeField]
         private bool _requireOvrHands = true;
@@ -129,12 +133,31 @@ namespace Oculus.Interaction.Input
             return cachedValue;
         }
 
-        private void HandleInputDataDirtied(OVRCameraRig cameraRig)
+        protected void HandleInputDataDirtied(OVRCameraRig cameraRig)
         {
             WhenInputDataDirtied(_isLateUpdate);
         }
 
-        #region Inject
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual OVRInput.Controller GetConnectedControllers()
+        {
+            return OVRInput.GetConnectedControllers();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool GetTouch(OVRInput.Touch mappingTouch, OVRInput.Controller controllerMask)
+        {
+            return OVRInput.Get(mappingTouch, controllerMask);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public virtual bool GetButton(OVRInput.Button mappingButton, OVRInput.Controller controllerMask)
+        {
+            return OVRInput.Get(mappingButton, controllerMask);
+        }
+
+
+    #region Inject
         public void InjectAllOVRCameraRigRef(OVRCameraRig ovrCameraRig, bool requireHands)
         {
             InjectInteractionOVRCameraRig(ovrCameraRig);

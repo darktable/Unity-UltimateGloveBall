@@ -245,7 +245,8 @@ namespace Oculus.Interaction.Input
 
             _controllerDataAsset.IsDataValid = true;
             _controllerDataAsset.IsConnected =
-                (OVRInput.GetConnectedControllers() & _ovrController) > 0;
+                (CameraRigRef.GetConnectedControllers() & _ovrController) > 0;
+            
             if (!_controllerDataAsset.IsConnected)
             {
                 // revert state fields to their defaults
@@ -265,12 +266,12 @@ namespace Oculus.Interaction.Input
                 bool usageActive;
                 if (mapping.IsTouch)
                 {
-                    usageActive = OVRInput.Get(mapping.Touch, controllerMask);
+                    usageActive = CameraRigRef.GetTouch(mapping.Touch, controllerMask);
                 }
                 else
                 {
                     Assert.IsTrue(mapping.IsButton);
-                    usageActive = OVRInput.Get(mapping.Button, controllerMask);
+                    usageActive = CameraRigRef.GetButton(mapping.Button, controllerMask);
                 }
 
                 if (usageActive)

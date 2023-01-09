@@ -143,11 +143,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 1794718727331493597}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a7b47e36715521d4e8a30d2c5b6e83e2, type: 3}
+  m_Script: {fileID: 11500000, guid: 0f957247836af6b4ba9d8069ab744f35, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _ovrCameraRig: {fileID: 3798514984876897876}
   _requireOvrHands: 1
+  m_fpsSimulator: {fileID: 0}
 --- !u!114 &4056769475630106512
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1107,6 +1108,7 @@ MonoBehaviour:
   m_movementSpeed: 12
   m_walkSpeed: 2
   m_head: {fileID: 3988992931918966440}
+  m_inEditorHeadHeight: 1.7
   RotationEitherThumbstick: 1
   IsRotationEnabled: 1
   RotationAngle: 45

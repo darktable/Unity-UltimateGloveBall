@@ -169,6 +169,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &508997528 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1819655302111354766, guid: 8be47510aaaba2b438ff544d21b4c447, type: 3}
+  m_PrefabInstance: {fileID: 719002959}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4cde28ae0be56a248a2f91f09d9b8e57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &719002959
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1000,6 +1011,10 @@ PrefabInstance:
       propertyPath: m_hasFontAssetChanged
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8610948096547351988, guid: 2e9ef258a16a2b24684d95d68d7117f8, type: 3}
+      propertyPath: m_fpsSimulator
+      value: 
+      objectReference: {fileID: 508997528}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2e9ef258a16a2b24684d95d68d7117f8, type: 3}
 --- !u!1001 &7917622356559042535
