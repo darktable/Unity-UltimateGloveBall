@@ -7,6 +7,8 @@ using Meta.Multiplayer.Core;
 using Unity.Netcode;
 using UnityEngine;
 using static Oculus.Avatar2.OvrAvatarEntity;
+using Unity.Collections;
+using UnityEngine.Assertions;
 
 using Stopwatch = System.Diagnostics.Stopwatch;
 
@@ -42,6 +44,8 @@ namespace Meta.Multiplayer.Avatar
         private Dictionary<StreamLOD, double> m_lastUpdateTime = new();
         [SerializeField, AutoSet] private AvatarEntity m_entity;
 
+        protected AvatarStateData avatarData;
+
         public ulong UserId
         {
             get => m_userId.Value;
@@ -76,6 +80,18 @@ namespace Meta.Multiplayer.Avatar
 
             m_userId.OnValueChanged?.Invoke(ulong.MaxValue, m_userId.Value);
             m_entity.Initialize();
+
+            if (m_entity.IsLocal)
+            {
+                avatarData = new AvatarStateData(2048);
+            }
+        }
+
+        public override void OnNetworkDespawn()
+        {
+            base.OnNetworkDespawn();
+
+            avatarData.Dispose();
         }
 
         private void Update()
@@ -135,12 +151,16 @@ namespace Meta.Multiplayer.Avatar
 
         private void SendAvatarData(StreamLOD lod)
         {
-            var bytes = m_entity.RecordStreamData(lod);
-            SendAvatarData_ServerRpc(bytes);
+            // copy the avatar's state into NetworkSerializable NativeArray<byte>
+            avatarData.length = (int)m_entity.RecordStreamData_AutoBuffer(lod, ref avatarData.bytes);
+            Assert.IsTrue(avatarData.length > 0);
+            avatarData.lod = lod;
+
+            SendAvatarData_ServerRpc(avatarData);
         }
 
         [ServerRpc(Delivery = RpcDelivery.Unreliable)]
-        private void SendAvatarData_ServerRpc(byte[] data, ServerRpcParams args = default)
+        private void SendAvatarData_ServerRpc(AvatarStateData data, ServerRpcParams args = default)
         {
             var allClients = NetworkManager.Singleton.ConnectedClientsIds;
             var targetClients = allClients.Except(args.Receive.SenderClientId).ToTempArray(allClients.Count - 1);
@@ -148,12 +168,13 @@ namespace Meta.Multiplayer.Avatar
         }
 
         [ClientRpc(Delivery = RpcDelivery.Unreliable)]
-        private void SendAvatarData_ClientRpc(byte[] data, ClientRpcParams args)
+        private void SendAvatarData_ClientRpc(AvatarStateData data, ClientRpcParams args)
         {
             ReceiveAvatarData(data);
+            data.Dispose();
         }
 
-        private void ReceiveAvatarData(byte[] data)
+        private void ReceiveAvatarData(AvatarStateData data)
         {
             if (!m_entity)
             {
@@ -162,7 +183,7 @@ namespace Meta.Multiplayer.Avatar
 
             var latency = (float)m_streamDelayWatch.Elapsed.TotalSeconds;
 
-            m_entity.ApplyStreamData(data);
+            m_entity.ApplyStreamData(in data.bytes);
 
             var delay = Mathf.Clamp01(latency * m_streamDelayMultiplier);
             m_currentStreamDelay = Mathf.LerpUnclamped(m_currentStreamDelay, delay, PLAYBACK_SMOOTH_FACTOR);
