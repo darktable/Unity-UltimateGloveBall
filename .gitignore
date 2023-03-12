@@ -82,3 +82,5 @@ Assets/Oculus/VR/Editor/Tools/ovr-platform-util.exe.meta
 Assets/Oculus/VR/Editor/Tools.meta
 
 keystore-passwords.txt
+Assets/Samples/**
+Assets/Samples.meta

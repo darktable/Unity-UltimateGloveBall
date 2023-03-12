@@ -734,6 +734,7 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!137 &8953184607864605567 stripped
 SkinnedMeshRenderer:
   m_CorrespondingSourceObject: {fileID: 823048833304903758, guid: 1c18f919b6461471bb6b4e057ecb06ee, type: 3}
